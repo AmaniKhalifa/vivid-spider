@@ -1,0 +1,5 @@
+*.lock
+*.sublime-project
+*.sublime-workspace
+*.json
+*.pyc
