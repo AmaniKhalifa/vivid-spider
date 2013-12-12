@@ -7,6 +7,7 @@ from movies.items import elcinema_movie
 from scrapy.http import Request
 import re
 from urlparse import urljoin
+from scrapy.selector import Selector
 
 class elcinemaSpider(CrawlSpider):
     name = "elcinema_now"
@@ -21,17 +22,8 @@ class elcinemaSpider(CrawlSpider):
         scrapy crawl elcinema_now  -a country=eg -o elcinema_now_eg.json
     """
     #default country to crawl in eg
-    country = 'eg'
-    urls = ["http://www.elcinema.com/en/now/"]
 
-    def __init__(self, country=None):
-        super(elcinemaSpider, self).__init__()
-        self.country = country
-        if country != None:
-            for url in self.urls:
-                self.start_urls.append(url+country)
-        else:
-            self.start_urls = self.urls
+    start_urls = ["http://www.elcinema.com/en/now/eg", "http://www.elcinema.com/en/now/lb", "http://www.elcinema.com/en/now/ae"]
     
     rules = (
     	     #pagination
@@ -41,7 +33,7 @@ class elcinemaSpider(CrawlSpider):
            )
 
     def start(self,response):
-        hxs=HtmlXPathSelector(response)
+        hxs=Selector(response)
         movie_url = response.url #meta
         url = hxs.select('//div[@class="boxed-1"]/*/a[contains(text(),"More") and contains(@href,"theater")]/@href').extract()
         image_url = hxs.select('//div[@class="page-content"]/div[@class="row"]/*/div[contains(@class,"media-photo")]/a/@href').extract()
@@ -54,7 +46,7 @@ class elcinemaSpider(CrawlSpider):
             yield Request(url=theaters_url,meta={'url':response.url,'image_url':image_url},callback=self.parse_movie_theaters)
 
     def parse_movie_theaters(self,response):
-        hxs=HtmlXPathSelector(response)
+        hxs=Selector(response)
         theaters = hxs.select('//div[@class="boxed-1" and contains(.//@id,"'+self.country+'")]/div/ul/li//a[not(contains(@href,"#"))]/text()').extract()
         theaters_urls = hxs.select('//div[@class="boxed-1" and contains(.//@id,"'+self.country+'")]/div/ul/li//a[not(contains(@href,"#"))]/@href').extract()
         movie_url = response.request.meta['url']
@@ -66,7 +58,7 @@ class elcinemaSpider(CrawlSpider):
 
 
     def get_photos(self,response):
-        hxs = HtmlXPathSelector(response)
+        hxs = Selector(response)
         images = hxs.select('//div[@class="media-photo"]/a/img/@src | //div[@class="photo-navigate"]/img/@src').extract()
 
         images = map(lambda s : re.sub(r'_\d+\.', '_147.', s), images)
@@ -118,7 +110,7 @@ class elcinemaSpider(CrawlSpider):
         gen = hxs.select('//div[@class="padded1-v"]//ul/li/text()[2]').extract()
         item['genere'] =  map(lambda s: s.strip(), gen)
 
-        item['country'] = self.country
+        item['country'] = ''
 
     	item['description'] = ' '.join(hxs.select('//p[@itemprop="description"]/text()[1] | //p[@itemprop="description"]/span/text()').extract()).strip()
         cast = hxs.select('//div[@class="padded1-h"]//a/@title').extract()

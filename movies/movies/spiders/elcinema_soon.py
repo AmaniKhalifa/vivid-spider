@@ -1,5 +1,5 @@
 from scrapy.spider import BaseSpider
-from scrapy.selector import HtmlXPathSelector
+#from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy import log
@@ -7,6 +7,7 @@ from movies.items import elcinema_movie
 from scrapy.http import Request
 import re
 from urlparse import urljoin
+from scrapy.selector import Selector
 
 class elcinemaSpider(CrawlSpider):
     name = "elcinema_soon"
@@ -29,19 +30,10 @@ class elcinemaSpider(CrawlSpider):
         scrapy crawl elcinema_soon  -a country=eg -o elcinema_soon_eg.json
     """
 
-    urls = ["http://www.elcinema.com/en/soon/"]
-    #default is eg
-    country = 'eg'
-
-    def __init__(self, country=None):
-        super(elcinemaSpider, self).__init__()
-        self.country = country
-        if country != None:
-            for url in self.urls:
-                self.start_urls.append(url+country)
-        else:
-            self.start_urls = self.urls
-
+#    urls = 
+    current_country = 'Egypt'
+#    scraping_countries = ['eg']
+    start_urls = ["http://www.elcinema.com/en/soon/"]
     
     rules = (
 
@@ -52,9 +44,9 @@ class elcinemaSpider(CrawlSpider):
            )
 
     def start(self,response):
-        hxs=HtmlXPathSelector(response)
+        hxs = Selector(response)
         movie_url = response.url #meta
-        image_url = hxs.select('//div[@class="page-content"]/div[@class="row"]/*/div[contains(@class,"media-photo")]/a/@href').extract()
+        image_url = hxs.xpath('//div[@class="page-content"]/div[@class="row"]/*/div[contains(@class,"media-photo")]/a/@href').extract()
         if len(image_url) > 0: 
             image_url = urljoin(response.url,image_url[0])
             yield Request(url=image_url,meta={'url': response.url},dont_filter=True,callback=self.get_photos)
@@ -63,8 +55,8 @@ class elcinemaSpider(CrawlSpider):
             yield Request(url=response.url,meta={'image_url': ''},dont_filter=True,callback=self.parse_movie)
 
     def get_photos(self,response):
-        hxs = HtmlXPathSelector(response)
-        images = hxs.select('//div[@class="media-photo"]/a/img/@src | //div[@class="photo-navigate"]/img/@src').extract()
+        hxs = Selector(response)
+        images = hxs.xpath('//div[@class="media-photo"]/a/img/@src | //div[@class="photo-navigate"]/img/@src').extract()
 
         images = map(lambda s : re.sub(r'_\d+\.', '_147.', s), images)
         images = '\n'.join(images)
@@ -88,45 +80,45 @@ class elcinemaSpider(CrawlSpider):
 
         item['image_urls'] = images
        
-        hxs = HtmlXPathSelector(response)
-        item['film_name'] = ''.join(hxs.select('normalize-space(//*[@itemprop="name"]/text())').extract())
+        hxs = Selector(response)
+        item['film_name'] = ''.join(hxs.xpath('normalize-space(//*[@itemprop="name"]/text())').extract())
         
-        dur = hxs.select('normalize-space(//div[@class="row"]/ul[@class="stats"]/li/text()[contains(.,"min")])').extract()
+        dur = hxs.xpath('normalize-space(//div[@class="row"]/ul[@class="stats"]/li/text()[contains(.,"min")])').extract()
         item['duration'] = dur[0] if len(dur) > 0 else ''
 
-        countries = hxs.select('//li[contains(text(),"Releases")]/ul[contains(@class,"stats")]/li/img/@title').extract()
-        dates = hxs.select('//li[contains(text(),"Releases")]/ul[contains(@class,"stats")]/li/text()').extract()
+        countries = hxs.xpath('//li[contains(text(),"Releases")]/ul[contains(@class,"stats")]/li/img/@title').extract()
+        dates = hxs.xpath('//li[contains(text(),"Releases")]/ul[contains(@class,"stats")]/li/text()').extract()
 
         dates = map(lambda s: s.strip().replace(u'\xa0',' '),dates)
         dates = filter(lambda a: a != '', dates)
 
         item['release_countries_dates'] = self.gen_double_list("release_country",countries,"release_date",dates)
 
-        gen = hxs.select('//div[@class="padded1-v"]//ul/li/text()[2]').extract()
+        gen = hxs.xpath('//div[@class="padded1-v"]//ul/li/text()[2]').extract()
         item['genere'] =  map(lambda s: s.strip(), gen)
 
-        item['country'] = self.country
+        item['country'] = self.current_country
 
-        item['description'] = ' '.join(hxs.select('//p[@itemprop="description"]/text()[1] | //p[@itemprop="description"]/span/text()').extract()).strip()
-        cast = hxs.select('//div[@class="padded1-h"]//a/@title').extract()
-        cast_urls = hxs.select('//div[@class="padded1-h"]//a[not(contains(./img/@src ,"."))]/@href').extract()
+        item['description'] = ' '.join(hxs.xpath('//p[@itemprop="description"]/text()[1] | //p[@itemprop="description"]/span/text()').extract()).strip()
+        cast = hxs.xpath('//div[@class="padded1-h"]//a/@title').extract()
+        cast_urls = hxs.xpath('//div[@class="padded1-h"]//a[not(contains(./img/@src ,"."))]/@href').extract()
         item['cast'] = self.gen_double_list("name",cast,"link",map(lambda s: urljoin(response.url,s) , cast_urls) )
 
         item['url'] = response.url
 
-        item['elcinema_rating'] = ''.join(hxs.select('//*[@itemprop="ratingValue"]/text()').extract())
-        item['elcinema_rating_link'] = ''.join( map(lambda s: urljoin(response.url,s),hxs.select('//*[@itemprop="name"]/a/@href').extract()) ) 
+        item['elcinema_rating'] = ''.join(hxs.xpath('//*[@itemprop="ratingValue"]/text()').extract())
+        item['elcinema_rating_link'] = ''.join( map(lambda s: urljoin(response.url,s),hxs.xpath('//*[@itemprop="name"]/a/@href').extract()) ) 
 
-        directors = hxs.select('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Director")]/..//a/text()').extract()
-        directors_links = hxs.select('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Director")]/..//a/@href').extract()
+        directors = hxs.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Director")]/..//a/text()').extract()
+        directors_links = hxs.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Director")]/..//a/@href').extract()
 
         item['directors'] = self.gen_double_list("name",directors,"link",map(lambda s: urljoin(response.url,s) ,  directors_links))
-        writers = hxs.select('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Written")]/..//a/text()').extract()
-        writers_link = hxs.select('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Written")]/..//a/@href').extract()
+        writers = hxs.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Written")]/..//a/text()').extract()
+        writers_link = hxs.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Written")]/..//a/@href').extract()
 
         item['writers'] = self.gen_double_list("name",writers,"link",map(lambda s: urljoin(response.url,s) ,  writers_link))
 
-        item['videos'] = map(lambda s: urljoin(response.url,s) ,  hxs.select('//div[contains(@class,"media-video")]/a/@href').extract())
+        item['videos'] = map(lambda s: urljoin(response.url,s) ,  hxs.xpath('//div[contains(@class,"media-video")]/a/@href').extract())
         
         return item
 

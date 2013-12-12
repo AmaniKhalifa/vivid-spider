@@ -3,3 +3,6 @@
 *.sublime-workspace
 *.json
 *.pyc
+*/build/*
+*/project.egg-info/*
+*/setup.py
