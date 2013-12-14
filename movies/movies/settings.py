@@ -14,16 +14,9 @@ SPIDER_MODULES = ['movies.spiders']
 NEWSPIDER_MODULE = 'movies.spiders'
 
 
-#ITEM_PIPELINES = [
-#                  'movies.pipelines.MoviesPipeline',
-#                  ]
-
-ITEM_PIPELINES = {'scrapy_mongodb.MongoDBPipeline':  999}
-
-MONGODB_URI = 'mongodb://localhost:27017'
-MONGODB_DATABASE = 'scrapy'
-MONGODB_COLLECTION = 'movies'
-MONGODB_ADD_TIMESTAMP = True               
+ITEM_PIPELINES = {
+                  'movies.pipelines.MoviesPipeline':100,
+                  }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'movies (+http://www.yourdomain.com)'

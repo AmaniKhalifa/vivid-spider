@@ -6,14 +6,10 @@ import json
 
 class MoviesPipeline(object):
 
-	country = 'eg'
-	"""
-	def __init__(self,country=None):
-		if not country == None:
-			self.country = country
+	
     
    	def open_spider(self,spider):
-   		f = spider.name+'_'+self.country+'.jl'
+   		f = spider.name+'.json'
    		self.file = open(f, 'wb')
 
    	def close_spider(self,spider):
@@ -23,4 +19,4 @@ class MoviesPipeline(object):
    		line = json.dumps(dict(item)) + "\n"
    		self.file.write(line)
    		return item
-   	"""
+   	
