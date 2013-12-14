@@ -19,7 +19,6 @@ class elcinemaSpider(CrawlSpider):
         scrapy crawl elcinema_now  -o elcinema_now.json
     """
     
-    country = ''
     start_urls = ["http://www.elcinema.com/en/now/eg","http://www.elcinema.com/en/now/ae","http://www.elcinema.com/en/now/lb"]
 
 
@@ -31,9 +30,7 @@ class elcinemaSpider(CrawlSpider):
              Rule(SgmlLinkExtractor(restrict_xpaths=('//div[@class="row"]/div//span/a'), unique=True), follow=True,callback='start'),
            )
 
-    def parse_start_url(self,response):
-        self.country = response.url.split('/')[-2]
-        yield Request(response.url)
+
 
 
     def start(self,response):
