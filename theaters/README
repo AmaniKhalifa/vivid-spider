@@ -1,0 +1,2 @@
+scrapy deploy scrapy_first_deamon -p theaters
+curl http://localhost:6800/schedule.json -d project=theaters -d spider=elcinema_theaters

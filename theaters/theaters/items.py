@@ -23,3 +23,4 @@ class Theater(Item):
   rating_stats = Field()
 
   image = Field()
+  job_id = Field()

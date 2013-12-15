@@ -7,6 +7,7 @@ from theaters.items import Theater
 from scrapy.http import Request
 import re
 from urlparse import urljoin
+import os
 
 class elcinemaSpider(CrawlSpider):
   name = "elcinema_theaters"
@@ -57,4 +58,5 @@ class elcinemaSpider(CrawlSpider):
     item['rating_stats'] = urljoin(response.url,''.join(sel.xpath('//div[@class="boxed-2"]/*/a/@href[contains(.,"stats")]').extract()))
 
     item['image'] = urljoin(response.url,''.join(sel.xpath('//div[@class="span3"]/div[contains(@class,"media-photo")]/a/img/@src').extract()))
+    item['job_id'] = os.getenv('SCRAPY_JOB', "crawler")
     return item
