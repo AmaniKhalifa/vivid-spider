@@ -14,8 +14,12 @@ SPIDER_MODULES = ['theaters.spiders']
 NEWSPIDER_MODULE = 'theaters.spiders'
 
 ITEM_PIPELINES = {
-  'theaters.pipelines.MoviesPipeline':100,
+  'scrapy_mongodb.MongoDBPipeline': 900,
 }
+
+MONGODB_URI = 'mongodb://localhost:27017'
+MONGODB_DATABASE = 'scrapy'
+MONGODB_COLLECTION = 'elcinema_theaters'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'movies (+http://www.yourdomain.com)'
