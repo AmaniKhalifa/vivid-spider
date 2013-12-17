@@ -5,34 +5,34 @@
 
 from scrapy.item import Item, Field
 
-class Movie(Item):
-    #add imdb id
-    name = Field()
-    #Also Known As: Gravedad See more  (and link)
-    theaters = Field()
+class imdb_movie(Item):
+    film_name = Field()
+    original_name = Field()
+    
+    imdb_id = Field()
+    also_known_as = Field()
+
 
     duration = Field()
-    #imdb
     classification = Field()
 
-    #add link to parent_guide
     parent_guide = Field()
 
     genere = Field()
     release_date = Field()
-    release_country = Field()
-    #add link to Plot Summary | Plot Synopsis
+    release_country= Field()
+    release_countries_link = Field()
 
-    #link of all release dates
+    plot_summary = Field()
+    plot_synopsis = Field()
+    plot_keywords = Field()
+    plot_keywords_link = Field()
 
-    #imdb
     imdb_rating = Field()
-    #imdb
     num_user_rated = Field()
-    #add all details 
+    metacritic_reviews = Field()
+    metascore = Field()
 
-    #elcinema
-    elcinema_rating = Field()
 
     description = Field()
     story_line = Field()
@@ -40,12 +40,9 @@ class Movie(Item):
     directors = Field()
     writers = Field()
     cast = Field()
-    #add actor's link and actor's role name
-    image_url = Field()
-    #adding thumb and whole image and video
-    #add all trailers 
-    #add 10 images including all posters
-    #add tagline
+    posters = Field()
+    videos = Field()
+    taglines = Field()
     url = Field()
 
 class elcinema_movie(Item):

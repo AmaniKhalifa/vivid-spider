@@ -3,7 +3,6 @@ from scrapy.selector import Selector
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy import log
-from movies.items import Movie
 from movies.items import Theater
 from scrapy.http import Request
 import re
@@ -17,7 +16,7 @@ class elcinemaSpider(CrawlSpider):
     start_urls = ["http://www.elcinema.com/en/theaters/eg","http://www.elcinema.com/en/theaters/ae","http://www.elcinema.com/en/theaters/lb"]
 
     """
-        scrapy crawl elcinema_theaters  -o elcinema_theaters.json
+        scrapy crawl elcinema_theaters 
     """
 
     
