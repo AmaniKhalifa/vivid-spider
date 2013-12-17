@@ -15,8 +15,7 @@ class elcinemaSpider(CrawlSpider):
 
     """
     USAGE:
-    to crawl a specific country :
-        scrapy crawl elcinema_now  -o elcinema_now.json
+        scrapy crawl elcinema_now 
     """
     
     start_urls = ["http://www.elcinema.com/en/now/eg","http://www.elcinema.com/en/now/ae","http://www.elcinema.com/en/now/lb"]

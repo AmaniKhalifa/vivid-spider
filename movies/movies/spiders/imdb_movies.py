@@ -13,6 +13,10 @@ class imdbSpider(CrawlSpider):
     domain_name = "imdb.com"
     CONCURRENT_REQUESTS = 1
 
+    """
+    USAGE: scrapy crawl imdb_movies
+    """
+
     start_urls = ["http://www.imdb.com/movies-in-theaters/","http://www.imdb.com/movies-coming-soon/"]
     
     rules = (

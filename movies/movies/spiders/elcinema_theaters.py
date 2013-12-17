@@ -16,7 +16,7 @@ class elcinemaSpider(CrawlSpider):
     start_urls = ["http://www.elcinema.com/en/theaters/eg","http://www.elcinema.com/en/theaters/ae","http://www.elcinema.com/en/theaters/lb"]
 
     """
-        scrapy crawl elcinema_theaters  -o elcinema_theaters.json
+        scrapy crawl elcinema_theaters 
     """
 
     
