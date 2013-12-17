@@ -9,7 +9,7 @@ import re
 from urlparse import urljoin
 import os
 
-class elcinemaSpider(CrawlSpider):
+class ElcinemaNowSpider(CrawlSpider):
   name = "elcinema_now"
   domain_name = "elcinema.com"
   CONCURRENT_REQUESTS = 1
@@ -18,7 +18,7 @@ class elcinemaSpider(CrawlSpider):
     USAGE:
     scrapy crawl elcinema_now 
   """
-  start_urls = ["http://www.elcinema.com/en/now/eg","http://www.elcinema.com/en/now/ae","http://www.elcinema.com/en/now/lb"]
+#  start_urls = ["http://www.elcinema.com/en/now/eg","http://www.elcinema.com/en/now/ae","http://www.elcinema.com/en/now/lb"]
 
   rules = (
     #pagination
@@ -95,6 +95,7 @@ class elcinemaSpider(CrawlSpider):
     if len(name) == 0 or (len(name) > 0 and name[0] == ''):
         name  = sel.xpath('normalize-space(//span[@itemprop="name"]/text())').extract()
     film_name = ''.join(name)
+    print film_name
     dur = sel.xpath('normalize-space(//div[@class="row"]/ul[@class="stats"]/li/text()[contains(.,"min")])').extract()
     duration = dur[0] if len(dur) > 0 else ''
 
@@ -165,6 +166,8 @@ class elcinemaSpider(CrawlSpider):
 
       item['videos'] = videos
       item['job_id'] = os.getenv('SCRAPY_JOB', "crawler")
+      item['elcinema_work_id'] = response.url.split('/')[-2]
+      item['language'] = self.site_language
 
       items.append(item)
         

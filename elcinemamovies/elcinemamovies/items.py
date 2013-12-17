@@ -23,3 +23,5 @@ class ElcinemaMovie(Item):
   videos = Field()
   url = Field()
   job_id = Field()
+  elcinema_work_id = Field()
+  language = Field()

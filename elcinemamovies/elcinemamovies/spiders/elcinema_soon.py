@@ -9,7 +9,7 @@ import re
 from urlparse import urljoin
 import os
 
-class elcinemaSpider(CrawlSpider):
+class ElcinemaSoonSpider(CrawlSpider):
   name = "elcinema_soon"
   domain_name = "elcinema.com"
   CONCURRENT_REQUESTS = 1
@@ -105,6 +105,8 @@ class elcinemaSpider(CrawlSpider):
 
     item['videos'] = map(lambda s: urljoin(response.url,s) ,  sel.xpath('//div[contains(@class,"media-video")]/a/@href').extract())
     
-    item['job_id'] = os.getenv('SCRAPY_JOB', "crawler")    
+    item['job_id'] = os.getenv('SCRAPY_JOB', "crawler")
+    item['elcinema_work_id'] = response.url.split('/')[-2]
+    item['language'] = self.site_language
     
     return item
