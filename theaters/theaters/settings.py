@@ -20,7 +20,7 @@ ITEM_PIPELINES = {
 MONGODB_URI = 'mongodb://localhost:27017'
 MONGODB_DATABASE = 'scrapy'
 MONGODB_COLLECTION = 'elcinema_theaters'
-MONGODB_ADD_TIMESTAMP = True
+#MONGODB_ADD_TIMESTAMP = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'movies (+http://www.yourdomain.com)'
