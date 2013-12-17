@@ -3,7 +3,6 @@ from scrapy.selector import Selector
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy import log
-from movies.items import Movie
 from movies.items import Theater
 from scrapy.http import Request
 import re
