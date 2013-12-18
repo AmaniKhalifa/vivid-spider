@@ -12,7 +12,7 @@ class ElcinemaNowSpiderAR(ElcinemaNowSpider):
     USAGE:
     scrapy crawl elcinema_now 
   """
-  start_urls = ["http://www.elcinema.com/now/eg","http://www.elcinema.com/en/now/ae","http://www.elcinema.com/en/now/lb"]
+  start_urls = ["http://www.elcinema.com/ar/now/eg","http://www.elcinema.com/ar/now/ae","http://www.elcinema.com/ar/now/lb"]
 
   rules = (
     #pagination
