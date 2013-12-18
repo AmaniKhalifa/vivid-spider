@@ -19,7 +19,7 @@ class Video(Item):
     actors = Field()
     directors = Field()
     synopsis = Field()
-    album_format = Field()
+    format = Field()
     number_of_disks = Field()
     language = Field()
     subtitles = Field()

@@ -54,15 +54,17 @@ class VirginMusicSpider(CrawlSpider):
     item['image'] = urljoin(response.url,'/'+img[0]) if len(img) > 0 else ''
     item['album_name'] = ''.join(sel.xpath('//*[@itemprop="name"]/*/text()').extract()).strip()
     item['artist_name']  = ''.join(sel.xpath('//div[@class="albumartist"]/span/text()').extract()).strip()
-    item['album_format'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//*[@id="GVCustomFields_lbAnswerValue_1"]/text()').extract()).strip()
-    item['original_release_date'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//*[@id="GVCustomFields_lbAnswerValue_2"]/text()').extract()).strip()
-    n_disks = sel.xpath('//table[@id="GVCustomFields"]//*[@id="GVCustomFields_lbAnswerValue_3"]/text()').extract()
+
+    item['album_format'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Format")]/../../span/text()').extract()).strip()
+    item['original_release_date'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Release Date")]/../../span/text()').extract()).strip()
+    n_disks = sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Number of disks")]/../../span/text()').extract()
     item['number_of_disks'] = n_disks[0].strip() if len(n_disks) > 0 else ''
-    labels = sel.xpath('//table[@id="GVCustomFields"]//*[@id="GVCustomFields_lbAnswerValue_4"]/text()').extract()
+    labels = sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Label")]/../../span/text()').extract()
     labels = map(lambda a:a.strip(),labels)
     item['labels'] = labels[0].split(',') if len(labels) > 0 else []
-    item['genre'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//*[@id="GVCustomFields_lbAnswerValue_5"]/text()').extract()).strip()
-    item['original_SKU'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//*[@id="GVCustomFields_lbAnswerValue_6"]/text()').extract()).strip()
+    item['genre'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Genre")]/../../span/text()').extract()).strip()
+    item['original_SKU'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"SKU")]/../../span/text()').extract()).strip()
+    
     item['tracks'] = sel.xpath('//table[@id="gvTracks"]//*[contains(@id,"gvTracks_lbName")]/text()').extract()
     item['url'] = response.url
     return item

@@ -68,7 +68,7 @@ class VirginVideosSpider(CrawlSpider):
     	syno = sel.xpath('//div[@id="smallSynopsis"]//*/text()').extract()
     item['synopsis'] = '\n'.join(syno)
 
-    item['album_format'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Format")]/../../span/text()').extract()).strip()
+    item['format'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Format")]/../../span/text()').extract()).strip()
     n_disks = sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Number of disks")]/../../span/text()').extract()
     item['number_of_disks'] = n_disks[0].strip() if len(n_disks) > 0 else ''   
     lang = sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Language")]/../../span/text()').extract()
