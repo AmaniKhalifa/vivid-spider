@@ -32,7 +32,8 @@ class imdbSpider(CrawlSpider):
     	sel = Selector(response)
     	pages = sel.xpath('//select[contains(@name,"sort")]/option/@value').extract()
     	if len(pages) > 0 :
-	    	for page in pages:
+            for page in pages:
+                url = urljoin(response.url,page)
                 yield Request(url)
         else:
 	   		yield Request(response.url)
