@@ -30,3 +30,16 @@ class Video(Item):
     genre = Field()
     description = Field()
     url = Field()
+
+class Game(Item):
+    image = Field()
+    age_rating = Field()
+    game_name = Field()
+    format = Field()
+    synopsis = Field()
+    available_consoles = Field()
+    publisher = Field()
+    original_SKU = Field()
+    region = Field()
+    original_release_date = Field()
+    url = Field()
