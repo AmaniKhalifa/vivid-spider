@@ -7,6 +7,7 @@ from imdbmovies.items import IMDBMovie
 from scrapy.http import Request
 import re
 from urlparse import urljoin
+import os
 
 class imdbSpider(CrawlSpider):
   name = "imdb_movies"
@@ -173,5 +174,6 @@ class imdbSpider(CrawlSpider):
     item['plot_keywords'] = sel.xpath('//div[@itemprop="keywords"]/a/span/text()').extract()
     keywords_link = sel.xpath('//div[@itemprop="keywords"]/*/a/@href').extract()
     item['plot_keywords_link'] = urljoin(response.url,keywords_link[0]) if len(keywords_link) > 0 else ''
+    item['job_id'] = os.getenv('SCRAPY_JOB', "crawler")
 
     return item

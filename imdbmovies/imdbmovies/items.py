@@ -44,3 +44,4 @@ class IMDBMovie(Item):
   videos = Field()
   taglines = Field()
   url = Field()
+  job_id = Field()

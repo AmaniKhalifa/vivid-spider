@@ -1,2 +1,2 @@
 scrapy deploy scrapy_first_deamon -p imdbmovies
-curl http://localhost:6800/schedule.json -d project=theaters -d spider=imdb_movies
+curl http://localhost:6800/schedule.json -d project=imdbmovies -d spider=imdb_movies
