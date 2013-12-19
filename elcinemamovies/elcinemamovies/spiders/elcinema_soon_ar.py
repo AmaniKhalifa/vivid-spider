@@ -13,7 +13,7 @@ class ElcinemaSoonSpiderAR(ElcinemaSoonSpider):
     only for eg
   """
 
-  start_urls = ["http://www.elcinema.com/soon/"]
+  start_urls = ["http://www.elcinema.com/ar/soon/"]
 
   country = 'eg'
   rules = (

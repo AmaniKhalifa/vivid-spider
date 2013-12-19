@@ -95,17 +95,7 @@ class Game(Item):
 
     #add certificate
 
-class Album(Item):
-    i = Field()
-    #virginmegastore dubai
-    #all
-    #top tracks, pics, videos (links)
-    #events upcoming events where and when 
 
-
-
-
-    #pass
 
 class DVD(Item):
     i = Field()

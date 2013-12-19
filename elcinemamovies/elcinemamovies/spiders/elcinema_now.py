@@ -30,7 +30,7 @@ class ElcinemaNowSpider(CrawlSpider):
   def start(self,response):
     sel = Selector(response)
     movie_url = response.url #meta
-    url = sel.xpath('//div[@class="boxed-1"]/*/a[contains(text(),"More") and contains(@href,"theater")]/@href').extract()
+    url = sel.xpath('//div[@class="boxed-1"]/*/a/@href[contains(.,"video") or contains(.,"theater")]').extract()
     image_url = sel.xpath('//div[@class="page-content"]/div[@class="row"]/*/div[contains(@class,"media-photo")]/a/@href').extract()
     theaters_url = urljoin(response.url,url[0]) if len(url) > 0 else None
     if len(image_url) > 0: 
@@ -39,6 +39,12 @@ class ElcinemaNowSpider(CrawlSpider):
       image_url = None
     if not theaters_url == None:
       yield Request(url=theaters_url,meta={'url':response.url,'image_url':image_url},callback=self.parse_movie_theaters)
+    elif not image_url == None:
+      yield Request(url=image_url, meta={'url':movie_url,'theaters_strings':'','theaters_urls': ''},dont_filter=True,callback=self.get_photos)
+    else:
+      yield Request(url=movie_url, meta={'theaters_strings':'','theaters_urls':'','image_url':''},dont_filter=True,callback=self.parse_movie)
+
+
 
   def parse_movie_theaters(self,response):
     sel = Selector(response)
@@ -95,12 +101,12 @@ class ElcinemaNowSpider(CrawlSpider):
     if len(name) == 0 or (len(name) > 0 and name[0] == ''):
         name  = sel.xpath('normalize-space(//span[@itemprop="name"]/text())').extract()
     film_name = ''.join(name)
-    print film_name
-    dur = sel.xpath('normalize-space(//div[@class="row"]/ul[@class="stats"]/li/text()[contains(.,"min")])').extract()
+    dur = sel.xpath('//div[@class="row"]/ul[@class="stats"]/li/text()').extract()
+    dur = filter(lambda a: re.search(r'^\d+.*',a),dur)
     duration = dur[0] if len(dur) > 0 else ''
 
-    countries = sel.xpath('//li[contains(text(),"Releases")]/ul[contains(@class,"stats")]/li/img/@title').extract()
-    dates = sel.xpath('//li[contains(text(),"Releases")]/ul[contains(@class,"stats")]/li/text()').extract()
+    countries = sel.xpath('//li/ul[contains(@class,"stats")]/li/img/@title').extract()
+    dates = sel.xpath('//li/ul[contains(@class,"stats")]/li/text()').extract()
 
     dates = map(lambda s: s.strip().replace(u'\xa0',' '),dates)
     dates = filter(lambda a: a != '', dates)
@@ -117,13 +123,13 @@ class ElcinemaNowSpider(CrawlSpider):
     elcinema_rating = ''.join(sel.xpath('//*[@itemprop="ratingValue"]/text()').extract())
     elcinema_rating_link = ''.join( map(lambda s: urljoin(response.url,s),sel.xpath('//*[@itemprop="name"]/a/@href').extract()) ) 
 
-    directors = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Director")]/..//a/text()').extract()
-    directors_links = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Director")]/..//a/@href').extract() 
+    directors = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li[1]//li/a/text()').extract()
+    directors_links = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li[1]//li/a/@href').extract() 
 
     item_directors = self.gen_double_list("name",directors,"link",map(lambda s: urljoin(response.url,s) ,  directors_links))
 
-    writers = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Written")]/..//a/text()').extract()
-    writers_link = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li/text()[contains(.,"Written")]/..//a/@href').extract()
+    writers = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li[2]//li/a/text()').extract()
+    writers_link = sel.xpath('//div[contains(@itemtype,"Movie")]/ul/li[2]//li/a/@href').extract()
     item_writers = self.gen_double_list("name",writers,"link",map(lambda s: urljoin(response.url,s) ,  writers_link))
 
     videos = map(lambda s: urljoin(response.url,s) ,  sel.xpath('//div[contains(@class,"media-video")]/a/@href').extract())
