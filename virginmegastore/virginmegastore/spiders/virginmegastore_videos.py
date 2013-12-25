@@ -17,15 +17,11 @@ class VirginVideosSpider(CrawlSpider):
   CONCURRENT_REQUESTS = 1
 
   start_urls = ["http://www.virginmegastore.me/Movies.aspx?pageid=14"]
-
-
   
   rules = (
      Rule(SgmlLinkExtractor(restrict_xpaths=('//div[@class="musictypes"]/table//tr[2]//div/a'), unique=True, process_value=lambda x: x.replace('MoviesCategory','MoviesAllItems')), follow=False,callback='parse_pages'),
      #Rule(SgmlLinkExtractor(restrict_xpaths=('//a[@id="hlAllItems"]'), unique=True), follow=False,callback='parse_pages'),
-
    )
-
 
   def parse_pages(self,response):
     sel = Selector(response)
@@ -38,8 +34,8 @@ class VirginVideosSpider(CrawlSpider):
     if len(pages) > 0:
       n = int(pages[-1])
       for i in xrange(1,n+1):
-            page = str(i) if i > 10 else '0'+str(i)
-            yield FormRequest.from_response(response,formdata={'searchfield':'SEARCH','ControlTopMenu1$ScriptManager1':'PanelProducts|dlPages$ctl'+page+'$lbtnPage','__EVENTTARGET': 'dlPages$ctl'+page+'$lbtnPage'},dont_click=True,callback=self.parse_all)
+        page = str(i) if i > 10 else '0'+str(i)
+        yield FormRequest.from_response(response,formdata={'searchfield':'SEARCH','ControlTopMenu1$ScriptManager1':'PanelProducts|dlPages$ctl'+page+'$lbtnPage','__EVENTTARGET': 'dlPages$ctl'+page+'$lbtnPage'},dont_click=True,callback=self.parse_all)
    
   def parse_all(self,response):
     sel = Selector(response)
@@ -91,4 +87,5 @@ class VirginVideosSpider(CrawlSpider):
 
     item['description'] = ''.join(sel.xpath('//div[@class="moviespad"]/p/text() | //div[@class="moviespad"]/text()[last()]').extract()).strip()
     item['url'] = response.url
+    item['job_id'] = os.getenv('SCRAPY_JOB', "crawler")
     return item

@@ -16,15 +16,11 @@ class VirginGamesSpider(CrawlSpider):
   CONCURRENT_REQUESTS = 1
 
   start_urls = ["http://www.virginmegastore.me/Games.aspx?pageid=15"]
-
-
   
   rules = (
      Rule(SgmlLinkExtractor(restrict_xpaths=('//div[@class="musictypes"]/table//tr[2]//div/a[not(contains(@href,"pageid")) and contains(@href,"GamesCategory")]'), unique=True, process_value=lambda x: x.replace('GamesCategory','GamesAllItems')), follow=False,callback='parse_pages'),
      #Rule(SgmlLinkExtractor(restrict_xpaths=('//a[@id="hlAllItems"]'), unique=True), follow=False,callback='parse_pages'),
-
    )
-
 
   def parse_pages(self,response):
     sel = Selector(response)
@@ -37,8 +33,8 @@ class VirginGamesSpider(CrawlSpider):
     if len(pages) > 0:
       n = int(pages[-1])
       for i in xrange(1,n+1):
-            page = str(i) if i > 10 else '0'+str(i)
-            yield FormRequest.from_response(response,formdata={'searchfield':'SEARCH','ControlTopMenu1$ScriptManager1':'PanelProducts|dlPages$ctl'+page+'$lbtnPage','__EVENTTARGET': 'dlPages$ctl'+page+'$lbtnPage'},dont_click=True,callback=self.parse_all)
+        page = str(i) if i > 10 else '0'+str(i)
+        yield FormRequest.from_response(response,formdata={'searchfield':'SEARCH','ControlTopMenu1$ScriptManager1':'PanelProducts|dlPages$ctl'+page+'$lbtnPage','__EVENTTARGET': 'dlPages$ctl'+page+'$lbtnPage'},dont_click=True,callback=self.parse_all)
    
   def parse_all(self,response):
     sel = Selector(response)
@@ -70,4 +66,5 @@ class VirginGamesSpider(CrawlSpider):
     item['region'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Region")]/../../span/text()').extract())
     item['original_release_date'] = ''.join(sel.xpath('//table[@id="GVCustomFields"]//tr/td//span[contains(text(),"Release Date")]/../../span/text()').extract()).strip()
     item['url'] = response.url
+    item['job_id'] = os.getenv('SCRAPY_JOB', "crawler")
     return item
