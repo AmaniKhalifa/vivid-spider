@@ -59,16 +59,18 @@ class imdbSpider(CrawlSpider):
     if videos_url != None:
       yield Request(videos_url,meta = {'images':images,'movie_url':movie_url},callback=self.get_all_videos)
     else:
-      yield Request(movie_url,meta = {'images':images,'videos':''},callback=self.parse_movie)
+      yield Request(movie_url,meta = {'images':images,'videos':'', 'video_imgs': ''},callback=self.parse_movie)
 
   def get_all_videos(self,response):
     sel = Selector(response)
     videos = sel.xpath('//div[@id="main"]/div/ol/li//div/a/@href').extract()
     videos = map(lambda s: urljoin(response.url,s),videos)
     videos = '\n'.join(videos)
+    video_imgs = sel.xpath('//div[@id="main"]/div/ol/li//div/a/img/@loadlate').extract()
+    video_imgs = '\n'.join(video_imgs)
     images = response.request.meta['images']
     movie_url = response.request.meta['movie_url']
-    yield Request(movie_url,meta={'images':images,'videos':videos},callback=self.parse_movie,dont_filter=True)
+    yield Request(movie_url,meta={'images':images,'videos':videos, 'video_imgs': video_imgs},callback=self.parse_movie,dont_filter=True)
 
 
   def gen_double_list(self,s1,l1,s2,l2):
@@ -84,7 +86,9 @@ class imdbSpider(CrawlSpider):
     sel = Selector(response)
     item = IMDBMovie()
     item['posters'] = response.request.meta['images'].split('\n')
-    item['videos'] = response.request.meta['videos'].split('\n')
+    videos = response.request.meta['videos'].split('\n')
+    video_imgs = response.request.meta['video_imgs'].split('\n')
+    item['videos'] = [{'pic': video_imgs[i] , 'url': videos[i]} for i in range(len(videos))]
 
     names = sel.xpath('//h1/span[@itemprop="name"]/text()').extract()
     item['film_name'] = names[0] if len(names) > 0 else ''
