@@ -19,10 +19,10 @@ class imdbSpider(CrawlSpider):
     scrapy crawl imdb_movies
   """
 
-  start_urls = ["http://www.imdb.com/movies-in-theaters/","http://www.imdb.com/movies-coming-soon/"]
+  start_urls = ["http://www.imdb.com/movies-in-theaters/","http://www.imdb.com/movies-coming-soon/" ]
 
   rules = (
-    Rule(SgmlLinkExtractor(restrict_xpaths=('//div[contains(@class,"list_item")]//tr/td/h4[@itemprop="name"]/a'), unique=True), follow=True,callback='get_images_videos'),
+    Rule(SgmlLinkExtractor(restrict_xpaths=('//div[contains(@class,"list_item")]//tr/td/h4[@itemprop="name"]/a'), unique=True), follow=False,callback='get_images_videos'),
   )
 
   def parse_start_url(self,response):
@@ -40,7 +40,7 @@ class imdbSpider(CrawlSpider):
     images = sel.xpath('//div[contains(@class,"media")]/div[contains(@class,"see-more")]/a/span[contains(@class,"Vids")]/../@href').extract()
     images_url = urljoin(response.url,images[0]) if len(images) > 0 else None
 
-    videos = sel.xpath('//div[contains(@class,"media")]/div[contains(@class,"see-more")]/a[contains(text(),"videos")]/@href').extract()
+    videos = sel.xpath('//div[contains(@class,"media")]/div[contains(@class,"see-more")]/a[contains(text(),"video")]/@href').extract()
     videos_url = urljoin(response.url,videos[0]) if len(videos) > 0 else None
 
     movie_url = response.url
@@ -155,12 +155,12 @@ class imdbSpider(CrawlSpider):
     writers_link = map(lambda s: urljoin(response.url,s),writers_link)
 
     item['writers'] = self.gen_double_list("name",directors_name,"link",directors_link)
-
-    cast_name = sel.xpath('//table[@class="cast_list"]//tr/td[@itemprop="actor"]/a/span/text()').extract()
-    cast_link = sel.xpath('//table[@class="cast_list"]//tr/td[@itemprop="actor"]/a/@href').extract()
-    cast_link = map(lambda s:urljoin(response.url,s),cast_link)    
-    cast_image = sel.xpath('//table[@class="cast_list"]//tr/td[@class="primary_photo"]/a/img/@loadlate').extract()
-    cast_character_name = sel.xpath('//table[@class="cast_list"]//tr/td[@class="character"]/div/a/text()').extract()
+    cast = sel.xpath('//table[@class="cast_list"]//tr/td[@itemprop="actor"]/a').extract()
+    cast_name = map(lambda s: ''.join(re.findall(r'.*>(.*)</span>',s)),cast)
+    cast_link = map(lambda s: ''.join(re.findall(r'href="(.*)".*>\s*<span',s)),cast)
+    cast_image = sel.xpath('//table[@class="cast_list"]//tr/td[@class="primary_photo"]/a/img/@src').extract()
+    character = sel.xpath('//td[@class="character"]/div').extract()
+    cast_character_name = map(lambda s: ''.join(re.findall(r'.*>([^<>)(]*)</',s)).strip(),character)
     item['cast'] = [{"name": cast_name[i], "link": cast_link[i], "img": cast_image[i], "character_name": cast_character_name[i]} for i in range(len(cast_name))]
 
     item['url'] = response.url

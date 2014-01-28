@@ -14,11 +14,9 @@ SPIDER_MODULES = ['imdbmovies.spiders']
 NEWSPIDER_MODULE = 'imdbmovies.spiders'
 
 
-#ITEM_PIPELINES = {
-#  'imdbmovies.pipelines.MoviesPipeline':100,
-#}
 
 ITEM_PIPELINES = {
+  #'imdbmovies.pipelines.MoviesPipeline':100,
   'scrapy_mongodb.MongoDBPipeline': 900,
 }
 
