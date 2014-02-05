@@ -158,9 +158,8 @@ class imdbSpider(CrawlSpider):
     cast = sel.xpath('//table[@class="cast_list"]//tr/td[@itemprop="actor"]/a').extract()
     cast_name = map(lambda s: ''.join(re.findall(r'.*>(.*)</span>',s)),cast)
     cast_link = map(lambda s: ''.join(re.findall(r'href="(.*)".*>\s*<span',s)),cast)
-    cast_image = sel.xpath('//table[@class="cast_list"]//tr/td[@class="primary_photo"]/a/img/@src').extract()
-    character = sel.xpath('//td[@class="character"]/div').extract()
-    cast_character_name = map(lambda s: ''.join(re.findall(r'.*>([^<>)(]*)</',s)).strip(),character)
+    cast_image = sel.xpath('//table[@class="cast_list"]//tr/td[@class="primary_photo"]/a/img/@loadlate').extract()
+    cast_character_name = cast_character_name = sel.xpath('//table[@class="cast_list"]//tr/td[@class="character"]/div/a/text()').extract()
     item['cast'] = [{"name": cast_name[i], "link": cast_link[i], "img": cast_image[i], "character_name": cast_character_name[i]} for i in range(len(cast_name))]
 
     item['url'] = response.url
