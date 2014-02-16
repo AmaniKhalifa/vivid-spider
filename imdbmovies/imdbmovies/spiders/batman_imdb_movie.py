@@ -45,8 +45,8 @@ class BatmanImdbMovie(imdbSpider):
 
   def get_all_videos(self,response):
     sel = Selector(response)
-    videos = 'http://www.youtube.com/watch?v=yQ5U8suTUw0'
-    video_imgs = 'http://i1.ytimg.com/vi/yQ5U8suTUw0/mqdefault.jpg'
+    videos = 'http://www.youtube.com/watch?v=yQ5U8suTUw0\nhttp://www.youtube.com/watch?v=8jqq4j52Fb4\nhttp://www.youtube.com/watch?v=vwbVagbyQAU'
+    video_imgs = 'http://i1.ytimg.com/vi/yQ5U8suTUw0/mqdefault.jpg\nhttp://i1.ytimg.com/vi/8jqq4j52Fb4/mqdefault.jpg\nhttp://i1.ytimg.com/vi/vwbVagbyQAU/mqdefault.jpg'
     images = response.request.meta['images']
     movie_url = response.request.meta['movie_url']
     yield Request(movie_url,meta={'images':images,'videos':videos, 'video_imgs': video_imgs},callback=super(BatmanImdbMovie, self).parse_movie,dont_filter=True)
