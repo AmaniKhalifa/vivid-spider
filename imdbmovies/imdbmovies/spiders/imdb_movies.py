@@ -59,7 +59,7 @@ class imdbSpider(CrawlSpider):
     if videos_url != None:
       yield Request(videos_url,meta = {'images':images,'movie_url':movie_url},callback=self.get_all_videos)
     else:
-      yield Request(movie_url,meta = {'images':images,'videos':'', 'video_imgs': ''},callback=self.parse_movie)
+      yield Request(movie_url,meta = {'images':images,'videos':'', 'video_imgs': ''},callback=self.parse_movie,dont_filter=True)
 
   def get_all_videos(self,response):
     sel = Selector(response)
